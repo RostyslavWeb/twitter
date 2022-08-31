@@ -14,9 +14,9 @@ export default class App extends Component {
     super(props);
     this.state = {
       data: [
-        { label: 'Going to learn React', important: true, like: false, id: 1 },
-        { label: 'That is so good', important: false, like: false, id: 2 },
-        { label: 'I need break...', important: false, like: false, id: 3 }
+        { label: 'First post', important: true, like: false, id: 1 },
+        { label: 'Second post', important: false, like: false, id: 2 },
+        { label: 'Third post', important: false, like: false, id: 3 }
       ],
       term: '',
       filter: 'all'
@@ -27,6 +27,7 @@ export default class App extends Component {
     this.onToggleLiked = this.onToggleLiked.bind(this);
     this.onUpdateSearch = this.onUpdateSearch.bind(this);
     this.onFilterSelect = this.onFilterSelect.bind(this);
+    this.onChangeState = this.onChangeState.bind(this);
 
     this.maxId = 4;
   }
@@ -57,34 +58,26 @@ export default class App extends Component {
     });
   }
 
-  onToggleImportant(id) {
+  onChangeState(id, property) {
     this.setState(({ data }) => {
-      const index = data.findIndex(elem => elem.id === id);
-
-      const old = data[index];
-      const newItem = { ...old, important: !old.important };
-
-      const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
-
       return {
-        data: newArr
-      }
+        data: data.map((item) => {
+          const newItem = { ...item }; //клонируем item в локальной области вид-ти
+          if (item.id === id) {
+            newItem[property] = !newItem[property]; //меняем property на противоположное
+          }
+          return newItem; //обязательно вернуть новый item
+        }),
+      };
     });
   }
 
+  onToggleImportant(id) {
+    this.onChangeState(id, 'important');
+  }
+
   onToggleLiked(id) {
-    this.setState(({ data }) => {
-      const index = data.findIndex(elem => elem.id === id);
-
-      const old = data[index];
-      const newItem = { ...old, like: !old.like };
-
-      const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
-
-      return {
-        data: newArr
-      }
-    });
+    this.onChangeState(id, 'like');
   }
 
   searchPost(items, term) { //returns array posts
